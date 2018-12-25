@@ -11,7 +11,7 @@ namespace Genetyczny_v_1_0
     { //parametry symulacji
         public const int lp = 40;
         //liczba pokoleń w eksperymencie
-        public const double a = 1.5;
+        public const double a = 1.5; 
         //wartość początkowa przestrzeni poszukiwań
         public const double b = 3.5;
         //wartość końcowa przestrzeni poszukiwań 
