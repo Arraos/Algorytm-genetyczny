@@ -7,14 +7,18 @@ using System;
 namespace Genetyczny_v_1_0
 
 {
-    struct Parametry
+    struct Parametry        //wprowadzono zmiany. Dodano przestrzeń poszukiwań dla przedziałów x[3.000, 5.000]  y[2.000, 4.000]
     { //parametry symulacji
         public const int lp = 40;
         //liczba pokoleń w eksperymencie
-        public const double a = 1.5; 
-        //wartość początkowa przestrzeni poszukiwań
-        public const double b = 3.5;
-        //wartość końcowa przestrzeni poszukiwań 
+        public const double a = 3.0; 
+        //wartość początkowa przestrzeni poszukiwań dla x
+        public const double b = 5.0;
+        //wartość końcowa przestrzeni poszukiwań dla x
+        public const double c = 2.0;
+        //wartość początkowa przestrzeni poszukiwań dla y
+        public const double d = 4.0;
+        //wartość końcowa przestrzeni poszukiwań dla y
         public const int N = 11;
         //liczba genów w pojedynczym chromosomie
         public const int pula = 60;
@@ -87,7 +91,7 @@ namespace Genetyczny_v_1_0
             { fenotyp = fenotyp + populacja[pozycjaChromosomu, j] * rat; rat = rat * 2; }
             return fenotyp;
         }
-        public void ObliczFenotypy()
+        public void ObliczFenotypyX()  // wprowadzono zmiany. Dodano funkcję obliczajaca wartosc fenotypow dla populacji x oraz y
         {   //metoda liczy wartości fenotypów chromosomów populacji
             //w liniowej przestrzeni poszukiwań <a,b>
             //i umieszcza je w tablicy 'tablicaFenotypów'
@@ -95,17 +99,33 @@ namespace Genetyczny_v_1_0
                 tablicaFenotypow[pozycja] = Parametry.a + (Parametry.b - Parametry.a)
                 * ObliczFenotypChromosomu(pozycja) / power;
         }
+        public void ObliczFenotypyY()  // wprowadzono zmiany. Dodano funkcję obliczajaca wartosc fenotypow dla populacji x oraz y
+        {   //metoda liczy wartości fenotypów chromosomów populacji
+            //w liniowej przestrzeni poszukiwań <a,b>
+            //i umieszcza je w tablicy 'tablicaFenotypów'
+            for (int pozycja = 0; pozycja < Parametry.pula; pozycja++)
+                tablicaFenotypow[pozycja] = Parametry.c + (Parametry.d - Parametry.c)
+                * ObliczFenotypChromosomu(pozycja) / power;
+        }
 
-        public void ObliczDostosowanie()
+        public void ObliczDostosowanie()                       //wprowadzona zmiana. Dodano druga tablice dla funkcji f(x,y)
         {   //metoda oblicza wartości funkcji dostosowania,
             //umieszcza je w tablicy 'tablicaDostosowanie'
             //a następnie normalizuje
             double x;
+            double y;
             for (int i = 0; i < Parametry.pula; i++)
             {
                 x = tablicaFenotypow[i];
-                tablicaDostosowanie[i] = (Math.Exp(x) * Math.Sin(Math.PI * x) + 1) / x;
+                y = tablicaFenotypow[i];
+                tablicaDostosowanie[i] = 1 - (Math.Sin(1 + x) + Math.Cos(y));
             }
+   /*       for (int j =0;j < Parametry.pula; j++)
+            {
+               y = tablicaFenotypow[j];
+               tablicaDostosowanie[j] = (Math.Exp(y) * Math.Sin(Math.PI * y) + 1) / y;
+               1-(Math.Sin(1+x) + Math.Cos(y))
+            } */
         }
 
         void DostosowanieNormalizacja()
@@ -276,7 +296,8 @@ namespace Genetyczny_v_1_0
                 Populacja populacja = new Populacja();
                 populacja.LosujPopulacje();
                 //wylosowanie populacji rodzicielskiej
-                populacja.ObliczFenotypy();
+                populacja.ObliczFenotypyX();  //wprowadzono zmiany. Użyto metodę obliczanie wartosci fenotypów dla populacji X oraz Y.
+                populacja.ObliczFenotypyY();
                 populacja.ObliczDostosowanie();
                 Console.WriteLine("Nr pokolenia Srednia wartosc funkcji dostosowania");
                 Console.Write("{0, 3}          ", nrPokolenia);
@@ -287,7 +308,8 @@ namespace Genetyczny_v_1_0
                     populacja.Ruletka();
                     populacja.Krzyzowanie();
                     populacja.Mutacje();
-                    populacja.ObliczFenotypy();
+                    populacja.ObliczFenotypyX();
+                    populacja.ObliczFenotypyY();
                     populacja.ObliczDostosowanie();
                     Console.Write("{0, 3}          ", nrPokolenia);
                     populacja.PokazDostosowanieSrednie();
