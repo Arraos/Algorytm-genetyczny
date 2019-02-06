@@ -9,19 +9,23 @@ namespace Genetyczny_v_1_0
 {
     struct Parametry
     { //parametry symulacji
-        public const int lp = 40;
+        public const int lp = 20;
         //liczba pokoleń w eksperymencie
-        public const double a = 1.5;
-        //wartość początkowa przestrzeni poszukiwań
-        public const double b = 3.5;
-        //wartość końcowa przestrzeni poszukiwań 
+        public const double a = 3.0;
+        //wartość początkowa przestrzeni poszukiwań dla x
+        public const double b = 5.0;
+        //wartość końcowa przestrzeni poszukiwań dla x
+        public const double c = 2.0;
+        //wartość początkowa przestrzeni poszukiwań dla y
+        public const double d = 4.0;
+        //wartość końcowa przestrzeni poszukiwań dla y
         public const int N = 11;
         //liczba genów w pojedynczym chromosomie
-        public const int pula = 60;
+        public const int pula = 20;
         //liczba osobników  w populacji (liczba parzysta)
         public const double pk = 0.75;
         //prawdopodobieństwo krzyżowania
-        public const double pm = 0.01;
+        public const double pm = 0.02;
         //prawdopodobieństwo mutacji
     }
 
@@ -61,8 +65,10 @@ namespace Genetyczny_v_1_0
         //reprezentacji populacji chromosomów
         { populacja = new Byte[Parametry.pula, Parametry.N]; }
 
-        double[] tablicaFenotypow = new double[Parametry.pula];
-        //tablica wartości fenotypów dla populacji chromosomów
+        double[] tablicaFenotypowX = new double[Parametry.pula];
+        //tablica wartości fenotypów dla populacji chromosomów X
+        double[] tablicaFenotypowY = new double[Parametry.pula];
+        //tablica wartości fenotypów dla populacji chromosomów Y
 
         int power = LiczbyBazowe.Power();
 
@@ -87,13 +93,21 @@ namespace Genetyczny_v_1_0
             { fenotyp = fenotyp + populacja[pozycjaChromosomu, j] * rat; rat = rat * 2; }
             return fenotyp;
         }
-        public void ObliczFenotypy()
+        public void ObliczFenotypyX()                  // <---------------------------------------------------Do przerobienia--------------------------------------
         {   //metoda liczy wartości fenotypów chromosomów populacji
             //w liniowej przestrzeni poszukiwań <a,b>
             //i umieszcza je w tablicy 'tablicaFenotypów'
-            for (int pozycja = 0; pozycja < Parametry.pula; pozycja++)
-                tablicaFenotypow[pozycja] = Parametry.a + (Parametry.b - Parametry.a)
-                * ObliczFenotypChromosomu(pozycja) / power;
+            for (int pozycjaX = 0; pozycjaX < Parametry.pula; pozycjaX++)
+                tablicaFenotypowX[pozycjaX] = Parametry.a + (Parametry.b - Parametry.a)    // <------------------------Dodać zmienne ?
+                * ObliczFenotypChromosomu(pozycjaX) / power;
+        }
+        public void ObliczFenotypyY()                  // <---------------------------------------------------Do przerobienia--------------------------------------
+        {   //metoda liczy wartości fenotypów chromosomów populacji
+            //w liniowej przestrzeni poszukiwań <a,b>
+            //i umieszcza je w tablicy 'tablicaFenotypów'
+            for (int pozycjaY = 0; pozycjaY < Parametry.pula; pozycjaY++)
+                tablicaFenotypowY[pozycjaY] = Parametry.c + (Parametry.d - Parametry.c)    // <------------------------Dodać zmienne ?
+                * ObliczFenotypChromosomu(pozycjaY) / power;
         }
 
         public void ObliczDostosowanie()
@@ -101,11 +115,13 @@ namespace Genetyczny_v_1_0
             //umieszcza je w tablicy 'tablicaDostosowanie'
             //a następnie normalizuje
             double x;
+            double y;
             for (int i = 0; i < Parametry.pula; i++)
             {
-                x = tablicaFenotypow[i];
-                tablicaDostosowanie[i] = (Math.Exp(x) * Math.Sin(Math.PI * x) + 1) / x;
-            }
+                x = tablicaFenotypowX[i];
+                y = tablicaFenotypowY[i];
+                tablicaDostosowanie[i] = -Math.Sin(x + 1) - Math.Cos(y) + 1; ;
+            } 
         }
 
         void DostosowanieNormalizacja()
@@ -203,10 +219,15 @@ namespace Genetyczny_v_1_0
             }
         }
 
-        public void PokazFenotypyPopulacji()
+        public void PokazFenotypyPopulacjiX()
         {   //wyświetla fenotypy aktualnej populacji
-            foreach (double fenotyp in tablicaFenotypow)
-                Console.Write("{0:#.##}\n ", fenotyp);
+            foreach (double fenotyp in tablicaFenotypowX)
+                Console.Write("{0:#.##}\n Dla X -> ", fenotyp);
+        }
+        public void PokazFenotypyPopulacjiY()
+        {   //wyświetla fenotypy aktualnej populacji
+            foreach (double fenotyp in tablicaFenotypowX)
+                Console.Write("{0:#.##}\n Dla Y -> ", fenotyp);
         }
 
         public void Mutacje()
@@ -276,7 +297,8 @@ namespace Genetyczny_v_1_0
                 Populacja populacja = new Populacja();
                 populacja.LosujPopulacje();
                 //wylosowanie populacji rodzicielskiej
-                populacja.ObliczFenotypy();
+                populacja.ObliczFenotypyX();
+               // populacja.ObliczFenotypyY();
                 populacja.ObliczDostosowanie();
                 Console.WriteLine("Nr pokolenia Srednia wartosc funkcji dostosowania");
                 Console.Write("{0, 3}          ", nrPokolenia);
@@ -287,10 +309,13 @@ namespace Genetyczny_v_1_0
                     populacja.Ruletka();
                     populacja.Krzyzowanie();
                     populacja.Mutacje();
-                    populacja.ObliczFenotypy();
+                    populacja.ObliczFenotypyX();
+                    populacja.ObliczFenotypyY();
                     populacja.ObliczDostosowanie();
                     Console.Write("{0, 3}          ", nrPokolenia);
                     populacja.PokazDostosowanieSrednie();
+                    populacja.PokazFenotypyPopulacjiX();
+                    populacja.PokazFenotypyPopulacjiY();
                 }
                 Console.ReadKey();
             }
