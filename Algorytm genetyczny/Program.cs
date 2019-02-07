@@ -19,9 +19,13 @@ namespace Genetyczny_v_1_0
         //wartość początkowa przestrzeni poszukiwań dla y
         public const double d = 4.0;
         //wartość końcowa przestrzeni poszukiwań dla y
-        public const int N = 10;
+        public const int N = 22;
+        //łączna liczba genów w pojedynczym chromosomie
+        public const int Nx = 11;
         //liczba genów w pojedynczym chromosomie
-        public const int pula = 40;
+        public const int Ny = 11;
+        //liczba genów w pojedynczym chromosomie
+        public const int pula = 20;
         //liczba osobników  w populacji (liczba parzysta)
         public const double pk = 0.75;
         //prawdopodobieństwo krzyżowania
@@ -60,7 +64,7 @@ namespace Genetyczny_v_1_0
         //dwuwymiarowa tablica aktualnych chromosomów populacji,
         //rozmieszczonych w kolejnych wierszach tablicy
 
-        public Populacja()
+        public Populacja()                                     //<-----------------------------------Wprowadzić kolejną populację dla y
         //konstruktor populacji - przydziela pamięć dla bitowej
         //reprezentacji populacji chromosomów
         { populacja = new Byte[Parametry.pula, Parametry.N]; }
@@ -86,10 +90,17 @@ namespace Genetyczny_v_1_0
             }
         }
 
-        int ObliczFenotypChromosomu(int pozycjaChromosomu)
+        int ObliczFenotypChromosomuX(int pozycjaChromosomu)
         {   //metoda liczy reprezentację dziesiętną wskazanego chromosomus
             int fenotyp = 0, rat = 1;
-            for (int j = 0; j < Parametry.N; j++)
+            for (int j = 0; j < Parametry.Nx; j++)
+            { fenotyp = fenotyp + populacja[pozycjaChromosomu, j] * rat; rat = rat * 2; }
+            return fenotyp;
+        }
+        int ObliczFenotypChromosomuY(int pozycjaChromosomu)
+        {   //metoda liczy reprezentację dziesiętną wskazanego chromosomus
+            int fenotyp = 0, rat = 1;
+            for (int j = Parametry.Nx; j < Parametry.N; j++)
             { fenotyp = fenotyp + populacja[pozycjaChromosomu, j] * rat; rat = rat * 2; }
             return fenotyp;
         }
@@ -97,17 +108,21 @@ namespace Genetyczny_v_1_0
         {   //metoda liczy wartości fenotypów chromosomów populacji
             //w liniowej przestrzeni poszukiwań <a,b>
             //i umieszcza je w tablicy 'tablicaFenotypów'
+            //power = Parametry.Nx;
             for (int pozycja = 0; pozycja < Parametry.pula; pozycja++)
                 tablicaFenotypowX[pozycja] = Parametry.a + (Parametry.b - Parametry.a)    // <------------------------Dodać zmienne ?
-                * ObliczFenotypChromosomu(pozycja) / power;
+                * ObliczFenotypChromosomuX(pozycja) / power;
+                power = Parametry.Nx;
         }
         public void ObliczFenotypyY()                  // <---------------------------------------------------Do przerobienia--------------------------------------
         {   //metoda liczy wartości fenotypów chromosomów populacji
             //w liniowej przestrzeni poszukiwań <a,b>
             //i umieszcza je w tablicy 'tablicaFenotypów'
+          //  power = Parametry.N - Parametry.Nx;
             for (int pozycja = 0; pozycja < Parametry.pula; pozycja++)
                 tablicaFenotypowY[pozycja] = Parametry.c + (Parametry.d - Parametry.c)    // <------------------------Dodać zmienne ?
-                * ObliczFenotypChromosomu(pozycja) / power;
+                * ObliczFenotypChromosomuY(pozycja) / power;
+              power = Parametry.N - Parametry.Nx;
         }
 
         public void ObliczDostosowanie()
@@ -226,7 +241,7 @@ namespace Genetyczny_v_1_0
         }
         public void PokazFenotypyPopulacjiY()
         {   //wyświetla fenotypy aktualnej populacji
-            foreach (double fenotyp in tablicaFenotypowX)
+            foreach (double fenotyp in tablicaFenotypowY)
                 Console.Write("{0:#.##}\n Dla Y -> ", fenotyp);
         }
         public void Mutacje()
@@ -257,7 +272,7 @@ namespace Genetyczny_v_1_0
         {   //wyświetla wartości funkcji dostosowania 
             //chromosomów aktualnej populacji
             foreach (double dostosowanie in tablicaDostosowanie)
-                Console.Write("{0:#.##}\n ", dostosowanie);
+                Console.Write("{0:#.##}\n ","\t", dostosowanie);
         }
 
         void PokazChromosomyPopulacji()
@@ -286,6 +301,7 @@ namespace Genetyczny_v_1_0
             Console.WriteLine("{0:#.##}", ObliczDostosowanieSrednie());
         }
 
+
         class Program
         {
             static void Main(string[] args)
@@ -313,8 +329,8 @@ namespace Genetyczny_v_1_0
                     populacja.ObliczDostosowanie();
                     Console.Write("{0, 3}          ", nrPokolenia);
                     populacja.PokazDostosowanieSrednie();
-                    populacja.PokazFenotypyPopulacjiX();
-                  //  populacja.PokazFenotypyPopulacjiY();
+                 //   populacja.PokazFenotypyPopulacjiX();
+                //    populacja.PokazFenotypyPopulacjiY();
                 //    Console.WriteLine("\n\nPoniżej kolejne pokolenie\n");
                 }
                 Console.ReadKey();
