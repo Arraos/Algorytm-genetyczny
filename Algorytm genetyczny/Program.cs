@@ -19,7 +19,7 @@ namespace Genetyczny_v_1_0
         //wartość początkowa przestrzeni poszukiwań dla y
         public const double d = 4.0;
         //wartość końcowa przestrzeni poszukiwań dla y
-        public const int N = 11;
+        public const int N = 10;
         //liczba genów w pojedynczym chromosomie
         public const int pula = 40;
         //liczba osobników  w populacji (liczba parzysta)
@@ -313,8 +313,8 @@ namespace Genetyczny_v_1_0
                     populacja.ObliczDostosowanie();
                     Console.Write("{0, 3}          ", nrPokolenia);
                     populacja.PokazDostosowanieSrednie();
-                  //  populacja.PokazFenotypyPopulacjiX();
-                 //   populacja.PokazFenotypyPopulacjiY();
+                    populacja.PokazFenotypyPopulacjiX();
+                  //  populacja.PokazFenotypyPopulacjiY();
                 //    Console.WriteLine("\n\nPoniżej kolejne pokolenie\n");
                 }
                 Console.ReadKey();
